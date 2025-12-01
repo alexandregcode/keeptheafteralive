@@ -1,0 +1,120 @@
+:root{
+  --bg:#050505; --accent:#00ffd2; --muted:#9fa6ab; --white:#e9eef0;
+  font-family: 'Oxanium', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+html,body{height:100%;margin:0}
+body{
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#000,#0b0b0b 80%);
+  color:var(--white); padding:18px;
+}
+
+/* full-bleed mobile frame */
+/* ...existing code... */
+
+.frame{
+  position:relative; /* allow landing/viewport to overlap */
+  width:100%; max-width:460px; height:95vh; border-radius:16px;
+  display:grid; place-items:center; overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* make landing + viewport full-bleed, but only show whichever is active */
+.landing, .viewport {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  margin:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+
+/* replace the landing layout so text is vertically + horizontally centered on small screens */
+.landing {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center !important;            /* ensure centered text */
+  gap:12px;
+  padding:0 18px;              /* safe horizontal padding */
+}
+/* ensure .brand doesn't carry implicit margins */
+.landing .brand { margin:0; }
+/* hide elements when aria-hidden="true" */
+.landing[aria-hidden="true"],
+.viewport[aria-hidden="true"] { display:none; }
+
+.landing[aria-hidden="false"],
+.viewport[aria-hidden="false"] { display:grid; }
+
+/* full-screen card */
+.card{
+  width:100%;
+  max-width:100%;
+  height:100%;
+  border-radius:0;
+  padding:28px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  border:0;
+  box-shadow:none;
+  background:linear-gradient(180deg, rgba(18,18,18,0.8), rgba(8,8,8,0.9));
+  transition:transform 240ms cubic-bezier(.2,.8,.2,1), opacity 160ms ease;
+  will-change:transform,opacity;
+}
+
+/* large, centered prompt text */
+.text{
+  font-size:calc(18px + 1.6vw);
+  text-align:center;
+  color:var(--white);
+  line-height:1.25;
+  max-width:86%;
+}
+
+/* keep type/meta visually small and out of the way */
+.type { font-size:11px; color:var(--muted); text-transform:uppercase; }
+.meta { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
+
+/* landing arrow and branding adjustments (still visible on landing only) */
+.landing .brand{ font-weight:700; font-size:40px; color:var(--accent); text-transform:uppercase; }
+.landing .subtle{ font-size:13px; color:var(--muted); }
+.arrow{ width:48px; height:48px; font-size:18px }
+
+/* small responsive tweaks */
+@media (max-width:420px){
+  body{padding:10px}
+  .frame{height:98vh;border-radius:12px}
+  .text{font-size:calc(16px + 2.4vw)}
+  .landing { padding-top: 0; }
+}
+
+@keyframes thump {
+  0%, 100% { transform: scale(1); }
+  40%      { transform: scale(1.06); }
+  60%      { transform: scale(0.985); }
+  60%      { transform: scale(0.985); }
+  40%      { transform: scale(0.995); }
+  60%      { transform: scale(0.985); }
+  80%      { transform: scale(0.975); }
+  60%      { transform: scale(0.985); }
+}
+
+/* apply on landing (only when visible) */
+.landing[aria-hidden="false"] .brand {
+  animation: thump 1s cubic-bezier(.2,.9,.2,1) infinite;
+  transform-origin: center;
+}
+
+/* keep motion respectful for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .landing[aria-hidden="false"] .brand { animation: none !important; }
+}
