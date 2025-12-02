@@ -140,7 +140,6 @@ function attachSwipe(el) {
   el.addEventListener('touchmove', move, {passive:true});
   el.addEventListener('touchend', end);
   el.addEventListener('mousedown', (e)=>{ e.preventDefault(); start(e); window.addEventListener('mousemove', move); window.addEventListener('mouseup', function up(){ end(); window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); }); });
-  el.addEventListener('click', next);
 }
 
 // landing swipe/tap
@@ -152,7 +151,6 @@ function attachLandingSwipe() {
   landing.addEventListener('touchstart', start, {passive:true});
   landing.addEventListener('touchmove', move, {passive:true});
   landing.addEventListener('touchend', end);
-  landing.addEventListener('click', next);
 }
 
 // keyboard
@@ -178,3 +176,7 @@ fetch('./topics.json')
     attachLandingSwipe();
     showLanding();
   });
+
+document.querySelector('.brand').addEventListener('dblclick', () => {
+  window.open('https://www.google.com', '_blank');
+});
