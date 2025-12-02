@@ -177,6 +177,50 @@ fetch('./topics.json')
     showLanding();
   });
 
-document.querySelector('.brand').addEventListener('dblclick', () => {
+const brand = document.querySelector('.brand');
+
+let longPressTimer = null;
+const LONG_PRESS_TIME = 500; // ms to trigger long press
+let isLongPressing = false;
+
+// --- TOUCH START ---
+brand.addEventListener('touchstart', (e) => {
+  // isolate this element from swipe logic
+  e.stopPropagation();
+
+  isLongPressing = false;
+
+  longPressTimer = setTimeout(() => {
+    longPressTimer = null;
+    isLongPressing = true;
+    onLongPress();
+  }, LONG_PRESS_TIME);
+}, { passive: true });
+
+// --- TOUCH MOVE ---
+brand.addEventListener('touchmove', (e) => {
+  // Finger is sliding — cancel long press
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+
+  // Prevent swipe from even starting
+  e.stopPropagation();
+}, { passive: true });
+
+// --- TOUCH END ---
+brand.addEventListener('touchend', (e) => {
+  // stop swipe from triggering if this ended on brand
+  e.stopPropagation();
+
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+}, { passive: true });
+
+function onLongPress() {
+  // 🔥 YOUR LONG-PRESS ACTION HERE
   window.open('https://www.google.com', '_blank');
-});
+}
