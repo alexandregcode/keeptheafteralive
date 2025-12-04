@@ -134,7 +134,33 @@ function attachSwipe(el) {
   let startY = 0, curY = 0, dragging = false;
   function start(e) { dragging = true; startY = e.touches ? e.touches[0].clientY : e.clientY; el.style.transition = 'none'; }
   function move(e) { if(!dragging) return; curY = e.touches ? e.touches[0].clientY : e.clientY; const d = curY - startY; el.style.transform = `translateY(${d}px)`; el.style.opacity = Math.max(0.35, 1 - Math.abs(d)/200); }
-  function end() { if(!dragging) return; dragging = false; const d = curY - startY; el.style.transition = ''; if(d < -60) { el.style.transform='translateY(-200px)'; el.style.opacity='0'; setTimeout(next, 100); } else if(d > 60) { el.style.transform='translateY(200px)'; el.style.opacity='0'; setTimeout(prev, 100); } else { el.style.transform='translateY(0)'; el.style.opacity='1'; } startY = curY = 0; }
+  //function end() { if(!dragging) return; dragging = false; const d = curY - startY; el.style.transition = ''; if(d < -60) { el.style.transform='translateY(-200px)'; el.style.opacity='0'; setTimeout(next, 100); } else if(d > 60) { el.style.transform='translateY(200px)'; el.style.opacity='0'; setTimeout(prev, 100); } else { el.style.transform='translateY(0)'; el.style.opacity='1'; } startY = curY = 0; }
+function end(e) {
+  if (!dragging) return;
+  dragging = false;
+
+  // prevent synthetic click
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const d = curY - startY;
+  el.style.transition = '';
+  
+  if (d < -60) {
+    el.style.transform='translateY(-200px)';
+    el.style.opacity='0';
+    setTimeout(next, 100);
+  } else if (d > 60) {
+    el.style.transform='translateY(200px)';
+    el.style.opacity='0';
+    setTimeout(prev, 100);
+  } else {
+    el.style.transform='translateY(0)';
+    el.style.opacity='1';
+  }
+
+  startY = curY = 0;
+}
 
   el.addEventListener('touchstart', start, {passive:true});
   el.addEventListener('touchmove', move, {passive:true});
@@ -170,9 +196,9 @@ fetch('./topics.json')
   .catch(err => {
     console.error('Failed to load topics.json', err);
     // fallback to inline minimal pools to keep app usable
-    pools.wouldYouRather = ["dance without shoes","only play vinyl","never sleep"].slice();
-    pools.tellAStory = ["Tell about your first sunrise set."];
-    pools.hotTakeSubjects = ["vinyl-only nights"];
+    pools.wouldYouRather = ["dance without shoes all night","run 10kms"].slice();
+    pools.tellAStory = ["Tell about your last sunrise."];
+    pools.hotTakeSubjects = ["on pet ownership"];
     attachLandingSwipe();
     showLanding();
   });
@@ -224,3 +250,16 @@ function onLongPress() {
   // 🔥 YOUR LONG-PRESS ACTION HERE
   window.open('https://www.google.com', '_blank');
 }
+
+let lastTouchTime = 0;
+
+document.addEventListener('touchend', () => {
+  lastTouchTime = Date.now();
+}, true);
+
+document.addEventListener('click', (e) => {
+  if (Date.now() - lastTouchTime < 350) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, true);
